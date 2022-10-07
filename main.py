@@ -24,6 +24,8 @@ class buildingManager():
         if(hasEnergyFor['m'] and hasEnergyFor['c']):
             if(metalMineLevel > (crystalMineLevel + 1)):
                 pickedMine = 'c'
+            else:
+                pickedMine = 'm'
         elif(hasEnergyFor['m'] and (not hasEnergyFor['c'])):
             pickedMine = 'm'
         elif((not hasEnergyFor['m']) and hasEnergyFor['c']):
