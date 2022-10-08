@@ -133,15 +133,15 @@ class buildingManager():
         percentageCap = 0.9
         if(self.request_data['allowanceResources']['Metal'] <= (self.request_data['buildingPrices'][attrName]['Metal'] * percentageCap)):
             if(self.isResourceEnough(constants.ATTR_NAME_OF_METAL_STORAGE)):
-                return {'id': constants.METAL_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_METAL_STORAGE]}
+                return {'id': constants.METAL_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_METAL_STORAGE] + 1}
 
         if(self.request_data['allowanceResources']['Crystal'] <= (self.request_data['buildingPrices'][attrName]['Crystal'] * percentageCap)):
             if(self.isResourceEnough(constants.ATTR_NAME_OF_CRYSTAL_STORAGE)):
-                return {'id': constants.METAL_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_METAL_STORAGE]}
+                return {'id': constants.METAL_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_METAL_STORAGE] + 1}
 
         if(self.request_data['allowanceResources']['Deuterium'] <= (self.request_data['buildingPrices'][attrName]['Deuterium'] * percentageCap)):
             if(self.isResourceEnough(constants.ATTR_NAME_OF_CRYSTAL_STORAGE)):
-                return {'id': constants.METAL_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_METAL_STORAGE]}
+                return {'id': constants.METAL_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_METAL_STORAGE] + 1}
         return True
 
     def getPrefferedBuildingJson(self):
