@@ -130,19 +130,44 @@ class buildingManager():
         return False
 
     def pickWhichStorageToBuild(self, attrName):
-        percentageCap = 0.9
-        if(self.request_data['allowanceResources']['Metal'] <= (self.request_data['buildingPrices'][attrName]['Metal'] * percentageCap)):
+        percentageCap = 0.8
+        if(self.getStorageCapacity(self.request_data['buildingLevels'][constants.ATTR_NAME_OF_METAL_STORAGE]) <= (self.request_data['buildingPrices'][attrName]['Metal'] * percentageCap)):
             if(self.isResourceEnough(constants.ATTR_NAME_OF_METAL_STORAGE)):
                 return {'id': constants.METAL_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_METAL_STORAGE] + 1}
 
-        if(self.request_data['allowanceResources']['Crystal'] <= (self.request_data['buildingPrices'][attrName]['Crystal'] * percentageCap)):
+        if(self.getStorageCapacity(self.request_data['buildingLevels'][constants.ATTR_NAME_OF_CRYSTAL_STORAGE]) <= (self.request_data['buildingPrices'][attrName]['Crystal'] * percentageCap)):
             if(self.isResourceEnough(constants.ATTR_NAME_OF_CRYSTAL_STORAGE)):
-                return {'id': constants.METAL_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_METAL_STORAGE] + 1}
+                return {'id': constants.METAL_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_CRYSTAL_STORAGE] + 1}
 
-        if(self.request_data['allowanceResources']['Deuterium'] <= (self.request_data['buildingPrices'][attrName]['Deuterium'] * percentageCap)):
-            if(self.isResourceEnough(constants.ATTR_NAME_OF_CRYSTAL_STORAGE)):
-                return {'id': constants.METAL_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_METAL_STORAGE] + 1}
-        return True
+        if(self.getStorageCapacity(self.request_data['buildingLevels'][constants.ATTR_NAME_OF_DEU_STORAGE]) <= (self.request_data['buildingPrices'][attrName]['Deuterium'] * percentageCap)):
+            if(self.isResourceEnough(constants.ATTR_NAME_OF_DEU_STORAGE)):
+                return {'id': constants.METAL_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_DEU_STORAGE] + 1}
+        return 'None'
+
+    def getStorageCapacity(self, storageLevel):
+        #God forgive me but I wont use the actual formula
+        if(storageLevel == 0):
+            return 10000
+        if(storageLevel == 1):
+            return 20000
+        if(storageLevel == 2):
+            return 40000
+        if(storageLevel == 3):
+            return 75000
+        if(storageLevel == 4):
+            return 140000
+        if(storageLevel == 5):
+            return 255000
+        if(storageLevel == 6):
+            return 470000
+        if(storageLevel == 7):
+            return 865000
+        if(storageLevel == 8):
+            return 1590000
+        if(storageLevel == 9):
+            return 2920000
+        if(storageLevel == 10):
+            return 5355000
 
     def getPrefferedBuildingJson(self):
         strategy = self.getCurrentStrategyToFollow()
