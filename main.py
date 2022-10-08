@@ -37,17 +37,36 @@ class buildingManager():
         if(pickedMine != 'None'):
             pickedBuildingID = self.convertCharToOgameID(pickedMine)
             neededLevel = self.getCurrentLevelOfBuilding(pickedBuildingID) + 1
-            return self.buildResponseJson(pickedBuildingID, neededLevel, 'NORMAL')
+            return self.considerBuildingStorage(pickedBuildingID, neededLevel, 'NORMAL')
         else:
             prefferedEnergy = self.strategy1GetPrefferedEnergyBuilding()
-            return self.buildResponseJson(prefferedEnergy['id'], prefferedEnergy['level'], 'NORMAL')
+            return self.considerBuildingStorage(prefferedEnergy['id'], prefferedEnergy['level'], 'NORMAL')
+
+    def considerBuildingStorage(self, buildingID, buildingLevel, severity):
+        attrName = constants.convertOgameIDToAttrName(buildingID)
+        storageResp = ''
+        if(self.isResourceEnough(attrName)):
+            if(self.isNeededResourceCloseToStorageCap(attrName)):
+                storageResp = self.pickWhichStorageToBuild(attrName)
+            else:
+                return self.buildResponseJson(buildingID, buildingLevel, severity)
+        else:
+            storageResp = self.pickWhichStorageToBuild(attrName)
+
+        if(storageResp != 'None'):
+            return self.buildResponseJson(storageResp['id'], storageResp['level'], 'NORMAL')
+        else:
+            return {'Result': 'None'}
 
     def strategy1GetPrefferedEnergyBuilding(self):
         ##TODO make this actually decide
         return {'id': constants.SOLAR_PLANT, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_SOLAR_PLANT]}
       
     def buildResponseJson(self, buildingID, buildingLevel, severity):
-        return {'buildingID': buildingID, 'buildingLevel': buildingLevel, 'severity': severity}
+        if(self.isResourceEnough(constants.convertOgameIDToAttrName(buildingID))):
+            return {'buildingID': buildingID, 'buildingLevel': buildingLevel, 'severity': severity}
+        else:
+            return {'Result': 'None'}
 
     def convertCharToOgameID(self, char):
         if(char == 'm'):
@@ -70,12 +89,31 @@ class buildingManager():
 
         unifiedPriceOfDeuMine = constants.getResourceSumInUnitPrice(self.request_data['buildingPrices'][constants.ATTR_NAME_OF_DEU_MINE])
 
-        if(unifiedPrice > (unifiedPriceOfDeuMine * 3)):
+        if(unifiedPrice > (unifiedPriceOfDeuMine * 2)):
             return 'd'
         return pickedMine
 
     def strategyError(self):
         print('The strategy was not correctly picked')
+
+    def isResourceEnough(self, attrName):
+        if(self.request_data['allowanceResources']['Metal'] < self.request_data['buildingPrices'][attrName]['Metal']):
+            return False
+        if(self.request_data['allowanceResources']['Crystal'] < self.request_data['buildingPrices'][attrName]['Crystal']):
+            return False
+        if(self.request_data['allowanceResources']['Deuterium'] < self.request_data['buildingPrices'][attrName]['Deuterium']):
+            return False
+        return True
+    
+    def isNeededResourceCloseToStorageCap(self, attrName):
+        percentageCap = 0.9
+        if(self.request_data['allowanceResources']['Metal'] <= (self.request_data['buildingPrices'][attrName]['Metal'] * percentageCap)):
+            return False
+        if(self.request_data['allowanceResources']['Crystal'] <= (self.request_data['buildingPrices'][attrName]['Crystal'] * percentageCap)):
+            return False
+        if(self.request_data['allowanceResources']['Deuterium'] <= (self.request_data['buildingPrices'][attrName]['Deuterium'] * percentageCap)):
+            return False
+        return True
 
     def isEnergyEnough(self, pickedMine):
         currentEnergy =  self.request_data['actualResources']['Energy']
@@ -87,10 +125,24 @@ class buildingManager():
         if(pickedMine == 'd'):
             neededEnergy = self.request_data['buildingPrices'][constants.ATTR_NAME_OF_DEU_MINE]['Energy']
 
-
         if(currentEnergy > neededEnergy):
             return True
         return False
+
+    def pickWhichStorageToBuild(self, attrName):
+        percentageCap = 0.9
+        if(self.request_data['allowanceResources']['Metal'] <= (self.request_data['buildingPrices'][attrName]['Metal'] * percentageCap)):
+            if(self.isResourceEnough(constants.ATTR_NAME_OF_METAL_STORAGE)):
+                return {'id': constants.METAL_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_METAL_STORAGE]}
+
+        if(self.request_data['allowanceResources']['Crystal'] <= (self.request_data['buildingPrices'][attrName]['Crystal'] * percentageCap)):
+            if(self.isResourceEnough(constants.ATTR_NAME_OF_CRYSTAL_STORAGE)):
+                return {'id': constants.METAL_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_METAL_STORAGE]}
+
+        if(self.request_data['allowanceResources']['Deuterium'] <= (self.request_data['buildingPrices'][attrName]['Deuterium'] * percentageCap)):
+            if(self.isResourceEnough(constants.ATTR_NAME_OF_CRYSTAL_STORAGE)):
+                return {'id': constants.METAL_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_METAL_STORAGE]}
+        return True
 
     def getPrefferedBuildingJson(self):
         strategy = self.getCurrentStrategyToFollow()
@@ -107,7 +159,8 @@ app = Flask(__name__)
 @app.route('/get_prefered_building', methods=['GET'])
 def getPreferedBuildingEndpoint():
     bldManager.request_data = request.get_json()
-    return bldManager.getPrefferedBuildingJson()
+    respData = bldManager.getPrefferedBuildingJson()
+    return respData
 
 @app.route('/ready', methods=['GET'])
 def getReadiness():
