@@ -108,12 +108,12 @@ class buildingManager():
     def isNeededResourceCloseToStorageCap(self, attrName):
         percentageCap = 0.9
         if(self.request_data['allowanceResources']['Metal'] <= (self.request_data['buildingPrices'][attrName]['Metal'] * percentageCap)):
-            return False
+            return True
         if(self.request_data['allowanceResources']['Crystal'] <= (self.request_data['buildingPrices'][attrName]['Crystal'] * percentageCap)):
-            return False
+            return True
         if(self.request_data['allowanceResources']['Deuterium'] <= (self.request_data['buildingPrices'][attrName]['Deuterium'] * percentageCap)):
-            return False
-        return True
+            return True
+        return False
 
     def isEnergyEnough(self, pickedMine):
         currentEnergy =  self.request_data['actualResources']['Energy']
