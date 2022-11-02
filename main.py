@@ -65,9 +65,9 @@ class buildingManager():
       
     def buildResponseJson(self, buildingID, buildingLevel, severity):
         if(self.isResourceEnough(constants.convertOgameIDToAttrName(buildingID))):
-            return {'buildingID': buildingID, 'buildingLevel': buildingLevel}
+            return {'constructable' : {'buildingID': buildingID, 'buildingLevel': buildingLevel}}
         else:
-            return {'buildingID': -1, 'buildingLevel': -1}
+            return {'constructable' : {'buildingID': -1, 'buildingLevel': -1}}
 
     def convertCharToOgameID(self, char):
         if(char == 'm'):
