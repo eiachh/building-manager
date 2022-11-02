@@ -65,9 +65,9 @@ class buildingManager():
       
     def buildResponseJson(self, buildingID, buildingLevel, severity):
         if(self.isResourceEnough(constants.convertOgameIDToAttrName(buildingID))):
-            return {'buildingID': buildingID, 'buildingLevel': buildingLevel, 'severity': severity}
+            return {'buildingID': buildingID, 'buildingLevel': buildingLevel}
         else:
-            return {'Result': 'None'}
+            return {'buildingID': -1, 'buildingLevel': -1}
 
     def convertCharToOgameID(self, char):
         if(char == 'm'):
@@ -138,11 +138,21 @@ class buildingManager():
 
         if(self.getStorageCapacity(self.request_data['buildingLevels'][constants.ATTR_NAME_OF_CRYSTAL_STORAGE]) <= (self.request_data['buildingPrices'][attrName]['Crystal'] * percentageCap)):
             if(self.isResourceEnough(constants.ATTR_NAME_OF_CRYSTAL_STORAGE)):
-                return {'id': constants.METAL_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_CRYSTAL_STORAGE] + 1}
+                return {'id': constants.CRYSTAL_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_CRYSTAL_STORAGE] + 1}
 
         if(self.getStorageCapacity(self.request_data['buildingLevels'][constants.ATTR_NAME_OF_DEU_STORAGE]) <= (self.request_data['buildingPrices'][attrName]['Deuterium'] * percentageCap)):
             if(self.isResourceEnough(constants.ATTR_NAME_OF_DEU_STORAGE)):
-                return {'id': constants.METAL_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_DEU_STORAGE] + 1}
+                return {'id': constants.DEU_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_DEU_STORAGE] + 1}
+
+        if(self.request_data['actualResources']['Deuterium'] == self.getStorageCapacity(self.request_data['buildingLevels'][constants.ATTR_NAME_OF_DEU_STORAGE])):
+            return {'id': constants.DEU_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_DEU_STORAGE] + 1}
+
+        if(self.request_data['actualResources']['Crystal'] == self.getStorageCapacity(self.request_data['buildingLevels'][constants.ATTR_NAME_OF_CRYSTAL_STORAGE])):
+            return {'id': constants.CRYSTAL_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_CRYSTAL_STORAGE] + 1}
+
+        if(self.request_data['actualResources']['Metal'] == self.getStorageCapacity(self.request_data['buildingLevels'][constants.ATTR_NAME_OF_METAL_STORAGE])):
+            return {'id': constants.METAL_STORAGE, 'level': self.request_data['buildingLevels'][constants.ATTR_NAME_OF_METAL_STORAGE] + 1}
+        
         return 'None'
 
     def getStorageCapacity(self, storageLevel):
@@ -170,9 +180,10 @@ class buildingManager():
         if(storageLevel == 10):
             return 5355000
 
-    def getPrefferedBuildingJson(self):
+    def getPreferredBuildingJson(self):
         strategy = self.getCurrentStrategyToFollow()
         if(strategy == 1):
+            asdasd = self.strategy1()
             return self.strategy1()
         else:
             self.strategyError()
@@ -185,7 +196,7 @@ app = Flask(__name__)
 @app.route('/get_prefered_building', methods=['GET'])
 def getPreferedBuildingEndpoint():
     bldManager.request_data = request.get_json()
-    respData = bldManager.getPrefferedBuildingJson()
+    respData = bldManager.getPreferredBuildingJson()
     return respData
 
 @app.route('/ready', methods=['GET'])
