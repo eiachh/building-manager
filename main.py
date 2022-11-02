@@ -2,6 +2,7 @@ from glob import glob
 import json
 import math
 from common_lib.const import constants
+from common_lib.utilities import utilities
 from flask import Flask,request
 
 class buildingManager():
@@ -83,11 +84,11 @@ class buildingManager():
     def strategy1CompareDeuMine(self, pickedMine):
         unifiedPrice = 0
         if(pickedMine == 'm'):
-             unifiedPrice = constants.getResourceSumInUnitPrice(self.request_data['buildingPrices'][constants.ATTR_NAME_OF_METAL_MINE])
+             unifiedPrice = utilities.getResourceSumInUnitPrice(self.request_data['buildingPrices'][constants.ATTR_NAME_OF_METAL_MINE])
         else:
-            unifiedPrice = constants.getResourceSumInUnitPrice(self.request_data['buildingPrices'][constants.ATTR_NAME_OF_CRYSTAL_MINE])
+            unifiedPrice = utilities.getResourceSumInUnitPrice(self.request_data['buildingPrices'][constants.ATTR_NAME_OF_CRYSTAL_MINE])
 
-        unifiedPriceOfDeuMine = constants.getResourceSumInUnitPrice(self.request_data['buildingPrices'][constants.ATTR_NAME_OF_DEU_MINE])
+        unifiedPriceOfDeuMine = utilities.getResourceSumInUnitPrice(self.request_data['buildingPrices'][constants.ATTR_NAME_OF_DEU_MINE])
 
         if(unifiedPrice > (unifiedPriceOfDeuMine * 2)):
             return 'd'
