@@ -57,7 +57,7 @@ class buildingManager():
         if(storageResp != 'None'):
             return self.buildResponseJson(storageResp['id'], storageResp['level'], 'NORMAL')
         else:
-            return {'Result': 'None'}
+            return {'constructable' : {'buildingID': -1, 'buildingLevel': -1}}
 
     def strategy1GetPrefferedEnergyBuilding(self):
         ##TODO make this actually decide
