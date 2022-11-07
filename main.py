@@ -97,7 +97,7 @@ class buildingManager():
         return pickedMine
 
     def strategyError(self):
-        logger.logError("Strategy error, no strategy to execute")
+        self.logger.logError("Strategy error, no strategy to execute")
         return {'constructable' : {'buildingID': -1, 'buildingLevel': -1}}
 
     def isResourceEnough(self, attrName):
