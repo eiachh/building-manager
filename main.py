@@ -3,11 +3,13 @@ import json
 import math
 from common_lib.const import constants
 from common_lib.utilities import utilities
+from common_lib.logger import logger
 from flask import Flask,request
 
 class buildingManager():
     def __init__(self):
         self.request_data = ''
+        self.logger = logger.OBLC_Logger('Init', 'BUILD_MAN')
 
     def getCurrentStrategyToFollow(self):
         if(self.request_data['buildingLevels'][constants.ATTR_NAME_OF_METAL_MINE] < 15 ):
@@ -95,7 +97,8 @@ class buildingManager():
         return pickedMine
 
     def strategyError(self):
-        print('The strategy was not correctly picked')
+        logger.logError("Strategy error, no strategy to execute")
+        return {'constructable' : {'buildingID': -1, 'buildingLevel': -1}}
 
     def isResourceEnough(self, attrName):
         if(self.request_data['allowanceResources']['Metal'] < self.request_data['buildingPrices'][attrName]['Metal']):
@@ -186,7 +189,7 @@ class buildingManager():
             asdasd = self.strategy1()
             return self.strategy1()
         else:
-            self.strategyError()
+            return self.strategyError()
 
 bldManager = buildingManager()
 
