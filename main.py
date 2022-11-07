@@ -3,13 +3,13 @@ import json
 import math
 from common_lib.const import constants
 from common_lib.utilities import utilities
-from common_lib.logger import logger
+from common_lib.logger import OBLC_Logger
 from flask import Flask,request
 
 class buildingManager():
     def __init__(self):
         self.request_data = ''
-        self.logger = logger.OBLC_Logger('Init', 'BUILD_MAN')
+        self.logger = OBLC_Logger('Init', 'BUILD_MAN')
 
     def getCurrentStrategyToFollow(self):
         if(self.request_data['buildingLevels'][constants.ATTR_NAME_OF_METAL_MINE] < 15 ):
